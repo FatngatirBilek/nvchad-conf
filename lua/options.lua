@@ -1,55 +1,59 @@
--- NOTE: Neovim options
+require "nvchad.options"
 
-local options = {
-  laststatus = 3, -- global statusline
-  backup = false, -- creates a backup file
-  conceallevel = 0, -- so that `` is visible in markdown files
-  fileencoding = "utf-8", -- the encoding written to a file
-  hidden = true, -- required to keep multiple buffers and open multiple buffers
-  ignorecase = true, -- ignore case in search patterns
-  mouse = "a", -- allow the mouse to be used in neovim
-  pumheight = 8, -- pop up menu height
-  pumblend = 0, -- transparency of pop-up menu
-  showmode = false, -- we don't need to see things like -- INSERT -- anymore
-  smartcase = true, -- smart case
-  smartindent = true, -- make indenting smarter again
-  splitbelow = true, -- force all horizontal splits to go below current window
-  splitright = true, -- force all vertical splits to go to the right of current window
-  swapfile = true, -- creates a swapfile
-  timeoutlen = 500, -- time to wait for a mapped sequence to complete (in milliseconds)
-  undofile = true, -- enable persistent undo
-  updatetime = 100, -- faster completion (4000ms default)
-  writebackup = false, -- if a file is being edited by another program (or was written to file while editing with another program), it is not allowed to be edited
-  expandtab = true, -- convert tabs to spaces
-  shiftwidth = 2, -- the number of spaces inserted for each indentation
-  tabstop = 2, -- insert 2 spaces for a tab
-  cursorline = true, -- highlight the current line
-  number = true, -- set numbered lines
-  relativenumber = true, -- set relative numbered lines
-  numberwidth = 5, -- set number column width to 4 {default 4}
-  signcolumn = "yes", -- always show the sign column, otherwise it would shift the text each time
-  wrap = false, -- display lines as one long line
-  scrolloff = 8, -- minimal number of columns to scroll horizontally.
-  sidescrolloff = 8, -- minimal number of screen columns
-  lazyredraw = false, -- Won't be redrawn while executing macros, register and other commands.
-  termguicolors = true, -- Enables 24-bit RGB color in the TUI
-  fillchars = { eob = " ", fold = " ", foldopen = "", foldsep = " ", foldclose = "", lastline = " " }, -- make EndOfBuffer invisible
-  ruler = false, -- show the line and column number of the cursor position``
-  cmdheight = 0, -- height of the command line
-  helpheight = 10, -- height of the help window
-  -- NOTE: Uncomment these options to enable pwsh for Windows
-  -- shell = vim.fn.executable "pwsh" and "pwsh" or "powershell",
-  -- shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;",
-  -- shellredir = "-RedirectStandardOutput %s -NoNewWindow -Wait",
-  -- shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode",
-  -- shellquote = "",
-  -- shellxquote = "",
+local custom = {
+  g = {
+    dap_virtual_text = true,
+    bookmark_sign = "",
+    skip_ts_context_commentstring_module = true,
+    tabufline_visible = true,
+    showtabline = 1,
+  },
+  opt = {
+    encoding = "utf-8",
+    fileencoding = "utf-8",
+    clipboard = "unnamedplus",
+    -- Folds
+    foldmethod = "expr",
+    foldexpr = "v:lua.vim.treesitter.foldexpr()",
+    foldcolumn = "1",
+    foldtext = "",
+    foldlevel = 99,
+    foldlevelstart = 5,
+    foldnestmax = 5,
+    fillchars = { eob = " ", fold = " ", foldopen = "", foldsep = " ", foldclose = "", lastline = " " },
+    -- Prevent issues with some language servers
+    backup = false,
+    swapfile = false,
+    -- Always show minimum n lines after/before current line
+    scrolloff = 10,
+    -- True color support
+    termguicolors = true,
+    emoji = false,
+    relativenumber = true,
+    -- Line break/wrap behaviours
+    wrap = true,
+    linebreak = true,
+    textwidth = 0,
+    -- wrapmargin = 0,
+    colorcolumn = "+1",
+    -- Indentation values
+    tabstop = 2,
+    shiftwidth = 0, -- 0 forces same value as tabstop
+    expandtab = true,
+    autoindent = true,
+    cursorline = true,
+    cursorlineopt = "both",
+    inccommand = "split",
+    ignorecase = true,
+    updatetime = 100,
+    lazyredraw = false,
+    iskeyword = vim.opt.iskeyword:append { "_", "@", ".", "-" },
+    path = vim.opt.path:append { "**", "lua", "src" },
+  },
 }
 
-vim.opt.shortmess:append "Ac" -- Disable asking
-vim.opt.whichwrap:append "<>[]hl"
-vim.opt.iskeyword:append "-"
-
-for name, value in pairs(options) do
-  vim.opt[name] = value
+for i, opts in pairs(custom) do
+  for k, v in pairs(opts) do
+    vim[i][k] = v
+  end
 end

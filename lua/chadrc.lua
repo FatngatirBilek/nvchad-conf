@@ -1,159 +1,150 @@
--- NOTE: NvChad Related Options
+-- https://github.com/NvChad/ui/blob/v2.5/lua/nvconfig.lua
+
 ---@type ChadrcConfig
--- This file needs to have same structure as nvconfig.lua
--- https://github.com/NvChad/ui/blob/v3.0/lua/nvconfig.lua
--- Please read that file to know all available options :(
 local M = {}
+local aux = require "gale.chadrc_aux"
+local modules = aux.modules
+local themes_customs = aux.themes_customs
 
-local highlights = require "highlights"
-local headers = require "core.statusline.headers"
+M.base46 = {
+  transparency = true,
+  theme = "bearded-arc",
+  theme_toggle = { "bearded-arc", "bearded-arc" },
+  integrations = {
+    "blankline",
+    "cmp",
+    "codeactionmenu",
+    "dap",
+    "devicons",
+    "hop",
+    "lsp",
+    "markview",
+    "mason",
+    "neogit",
+    "notify",
+    "nvimtree",
+    "rainbowdelimiters",
+    "semantic_tokens",
+    "todo",
+    "whichkey",
+  },
+}
 
-local function get_header(default)
-  if vim.g.random_header then
-    local headerNames = {}
-    for name, _ in pairs(headers) do
-      table.insert(headerNames, name)
-    end
+M.base46.hl_override = {
+  DevIconMd = { fg = "#FFFFFF", bg = "NONE" },
+  FloatTitle = { link = "FloatBorder" },
+  CursorLine = { bg = "black2" },
+  CursorLineNr = { bold = true },
+  CmpBorder = { link = "FloatBorder" },
+  CmpDocBorder = { link = "FloatBorder" },
+  TelescopeBorder = { link = "FloatBorder" },
+  TelescopePromptBorder = { link = "FloatBorder" },
+  NeogitDiffContext = { bg = "#171B21" },
+  NeogitDiffContextCursor = { bg = "black2" },
+  NeogitDiffContextHighlight = { link = "NeogitDiffContext" },
+  TbBufOffModified = { fg = { "green", "black", 50 } },
+  FoldColumn = { link = "FloatBorder" },
+  Comment = { italic = true },
+  ["@comment"] = { link = "Comment" },
+  ["@keyword"] = { italic = true },
+  ["@markup.heading"] = { fg = "NONE", bg = "NONE" },
+}
 
-    local randomName = headerNames[math.random(#headerNames)]
-    local randomHeader = headers[randomName]
-    return randomHeader
-  else
-    local name = (default == nil or default == "") and "nvchad" or default
-    return headers[name]
-  end
-end
+M.base46.hl_add = {
+  YankVisual = { bg = "lightbg" },
+  DevIconToml = { fg = "#9C4221", bg = "NONE" },
+  Border = { link = "FloatBorder" },
+  St_HarpoonInactive = { link = "StText" },
+  St_HarpoonActive = { link = "St_LspHints" },
+  St_GitBranch = { fg = "baby_pink", bg = M.base46.transparency and "NONE" or "statusline_bg" },
+  St_Oil = { fg = "grey_fg", bg = M.base46.transparency and "NONE" or "statusline_bg" },
+  GitSignsCurrentLineBlame = { link = "Comment" },
+  MarkviewLayer2 = { bg = "#171B21" },
+  MarkviewCode = { link = "MarkviewLayer2" },
+  HelpviewCode = { link = "MarkviewLayer2" },
+  HelpviewInlineCode = { link = "MarkviewInlineCode" },
+  HelpviewCodeLanguage = { link = "MarkviewCode" },
+  OilWinbar = { fg = "vibrant_green", bold = true },
+  CodeActionSignHl = { fg = "#F9E2AF" },
+  ["@number.luadoc"] = { fg = "Comment" },
+  ["@markup.quote.markdown"] = { bg = "NONE" },
+  ["@markup.raw.block.markdown"] = { link = "MarkviewLayer2" },
+}
+
+local theme_customs = themes_customs[M.base46.theme]
+M.base46 = theme_customs and vim.tbl_deep_extend("force", M.base46, theme_customs) or M.base46
 
 M.ui = {
-  telescope = { style = "borderless" }, -- borderless / bordered
   cmp = {
-    lspkind_text = true,
-    style = "default", -- default/flat_light/flat_dark/atom/atom_colored
-    format_colors = {
-      tailwind = true,
-    },
+    style = "default",
   },
   statusline = {
-    theme = "minimal", -- default/vscode/vscode_colored/minimal
-    -- default/round/block/arrow separators work only for default statusline theme
-    -- round and block will work for minimal theme only
-    separator_style = "round",
+    theme = "vscode_colored",
     order = {
       "mode",
-      "file",
-      "git",
+      "tint",
+      "filename",
+      "modified",
+      "tint",
+      "git_custom",
       "%=",
       "lsp_msg",
-      "python_venv",
+      "%=",
       "diagnostics",
-      "command",
-      "clients",
+      "lspx",
+      "harpoon",
+      "word_count",
+      "separator",
+      "oil_dir_cwd",
       "cwd",
-      "total_lines",
+      "stop",
     },
-    modules = require("core.statusline").modules,
+    modules = {
+      hack = modules.statusline.hack,
+      filename = modules.statusline.filename,
+      harpoon = modules.statusline.harpoon,
+      git_custom = modules.statusline.git_custom,
+      modified = modules.statusline.modified,
+      separator = modules.statusline.separator,
+      word_count = modules.statusline.word_count,
+      oil_dir_cwd = modules.statusline.oil_dir_cwd,
+      stop = modules.statusline.force_stop,
+      tint = modules.statusline.tint,
+      lspx = modules.lspx,
+    },
   },
 
   tabufline = {
-    enabled = true,
-    order = { "treeOffset", "buffers", "tabs", "btns" },
-    modules = require("core.tabufline").modules,
+    order = { "buffers", "tabs", "btns" },
   },
+
+  telescope = { style = "bordered" },
 }
 
-M.nvdash = {
-  load_on_startup = true,
-  header = get_header "nvchad",
-  buttons = {
-    { txt = "  Find File", keys = "Spc f f", cmd = "Telescope find_files" },
-    { txt = "󰈚  Recent Files", keys = "Spc f r", cmd = "Telescope oldfiles" },
-    { txt = "󰈭  Find Word", keys = "Spc f w", cmd = "Telescope live_grep" },
-    { txt = "  Find Projects", keys = "Spc f p", cmd = "Telescope projects" },
-    { txt = "  Themes", keys = "Spc f t", cmd = "Telescope themes" },
-    { txt = "  Mappings", keys = "Spc n c", cmd = "NvCheatsheet" },
-    { txt = "─", no_gap = true, rep = true },
-    {
-      txt = function()
-        local stats = require("lazy").stats()
-        local milliseconds = math.floor(stats.startuptime) .. " ms"
-        return "  Loaded " .. stats.loaded .. "/" .. stats.count .. " plugins in " .. milliseconds
-      end,
-      no_gap = true,
-    },
-    { txt = "─", no_gap = true, rep = true },
-  },
+M.cheatsheet = {
+  excluded_groups = { "_" },
 }
 
-M.cheatsheet = { theme = "grid" } -- simple/grid
-
-M.mason = {
-  cmd = true,
-  -- Use names from mason.nvim
-  -- For example, if you want to install "tsserver" you should use "typescript-language-server" in the list below
-  pkgs = {
-    -- Lua
-    "lua-language-server",
-    "vim-language-server",
-    "stylua",
-
-    -- Web Development
-    -- "css-lsp",
-    -- "html-lsp",
-    -- "typescript-language-server",
-    -- "deno",
-    -- "vue-language-server",
-    -- "tailwindcss-language-server",
-    -- "emmet_language_server",
-    -- "eslint-lsp",
-
-    -- PHP
-    -- "intelephense",
-
-    -- C/C++
-    -- "clangd",
-    -- "clang-format",
-
-    -- CMake
-    -- "neocmakelsp",
-
-    -- Java
-    -- "jdtls",
-
-    -- Yaml
-    -- "yaml-language-server",
-
-    -- Python
-    -- "basedpyright",
-
-    -- Go
-    -- "gopls",
-
-    -- C#
-    -- "omnisharp",
-    -- "omnisharp-mono",
-  },
+M.colorify = {
+  enabled = true,
+  mode = "virtual",
+  virt_text = "󱓻 ",
+  highlight = { hex = true, lspvars = true },
 }
 
-M.lsp = { signature = false }
-
-M.base46 = {
-  theme = "mountain",
-  transparency = false,
-  theme_toggle = { "mountain", "one_light" },
-  hl_override = highlights.override,
-  hl_add = highlights.add,
-  integrations = {
-    "notify",
-    "dap",
-    "trouble",
-  },
+M.lsp = {
+  signature = false,
 }
 
--- M.lazy_nvim = require "core.lazy" -- config for lazy.nvim startup options
-
--- M.plugins = "plugins"
-
--- check core.mappings for table structure
--- M.mappings = require "mappings"
+M.term = {
+  float = {
+    border = "rounded",
+    height = 0.5,
+    width = 0.58,
+    col = 0.2,
+    row = 0.2,
+  },
+  sizes = {},
+}
 
 return M
