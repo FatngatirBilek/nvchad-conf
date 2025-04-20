@@ -1,6 +1,7 @@
 local utils = require "gale.utils"
 local map = utils.glb_map
 
+-- General mappings
 map("n", "z-", "z^") -- Remap z^ into z- for convenience
 map("n", "g-", "g;") -- Remap g; into g- for convenience
 map("n", ";", ":", { desc = "General enter CMD mode" })
@@ -9,9 +10,8 @@ map("n", "<C-c>", "<cmd>%y+<CR>", { desc = "General copy file content" })
 map({ "n", "i" }, "<C-s>", "<cmd>w<CR>", { desc = "General save file" })
 map("n", "<Esc>", "<cmd>noh<CR>", { desc = "General clear search highlights" })
 map("n", "<leader>cs", "<cmd><CR>", { desc = "General clear statusline" })
-map("n", "<leader><F4>", "<cmd>stop<CR>", { desc = "Genaral stop NVIM" })
+map("n", "<leader><F4>", "<cmd>stop<CR>", { desc = "General stop NVIM" })
 map("n", "<leader>cm", "<cmd>mes clear<CR>", { desc = "General clear messages" })
--- https://github.com/neovim/neovim/issues/2048
 map("i", "<A-BS>", "<C-w>", { desc = "General remove word" })
 
 map("n", "<leader>ol", function()
@@ -74,31 +74,16 @@ map("n", "<leader>cp", function()
 end, { desc = "Open color picker" })
 
 -- NvChad
-map("n", "<leader>th", function()
+-- Updated theme picker toggle to <Space>tn
+map("n", "<Space>tn", function()
   require("nvchad.themes").open { style = "flat" }
 end, { desc = "Open theme picker" })
-
--- NvMenu
---[[ local menus = utils.menus
-map({ "n", "v" }, "<C-t>", function()
-  require("menu").open(menus.main)
-end, { desc = "Open NvChad menu" })
-
-map({ "n", "v" }, "<RightMouse>", function()
-  vim.cmd.exec '"normal! \\<RightMouse>"'
-  require("menu").open(menus.main, { mouse = true })
-end, { desc = "Open NvChad menu" }) ]]
 
 -- Term
 local term = require "nvchad.term"
 
-map("t", "<C-x>", "<C-\\><C-N>", { desc = "Term escape terminal mode" })
-
-map({ "n", "t" }, "<A-v>", function()
-  term.toggle { pos = "vsp", id = "vtoggleTerm" }
-end, { desc = "Term toggle vertical split" })
-
-map({ "n", "t" }, "<A-h>", function()
+-- Updated horizontal terminal toggle to <Space>th
+map({ "n", "t" }, "<Space>th", function()
   term.toggle { pos = "sp", id = "htoggleTerm" }
 end, { desc = "Term toggle horizontal split" })
 
@@ -136,7 +121,7 @@ end, { desc = "TreeSitter toggle inspect tree" })
 
 map("n", "<leader>ii", "<cmd>Inspect<CR>", { desc = "TreeSitter inspect under cursor" })
 
---- Tabufline
+-- Tabufline
 local tabufline = require "nvchad.tabufline"
 
 map("n", "<Tab>", function()
