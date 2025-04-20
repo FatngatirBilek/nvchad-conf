@@ -1,7 +1,7 @@
 ---@type NvPluginSpec
 return {
   "nvim-tree/nvim-tree.lua",
-  enabled = false,
+  enabled = true,
   init = function()
     vim.keymap.set("n", "<C-n>", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle NvimTree" })
   end,

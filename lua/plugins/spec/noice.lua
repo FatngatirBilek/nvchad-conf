@@ -5,7 +5,7 @@ return {
   ---@module "noice"
   opts = {
     cmdline = {
-      enabled = false,
+      enabled = true,
     },
     messages = {
       enabled = false,
