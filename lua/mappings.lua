@@ -73,6 +73,9 @@ map("n", "<leader>cp", function()
   require("minty.huefy").open()
 end, { desc = "Open color picker" })
 
+-- NvimTree toggle
+map("n", "<Space>e", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle NvTree file explorer" })
+
 -- NvChad
 -- Updated theme picker toggle to <Space>tn
 map("n", "<Space>tn", function()
