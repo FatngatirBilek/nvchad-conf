@@ -125,7 +125,7 @@ autocmd("ModeChanged", {
   pattern = { "n:i", "n:v", "i:v" },
   group = augroup("UserDiagnostic", { clear = true }),
   callback = function()
-    vim.diagnostic.enable(false)
+    vim.diagnostic.disable()
   end,
 })
 
@@ -134,7 +134,7 @@ autocmd({ "BufRead", "BufNewFile" }, {
   pattern = "*/node_modules/*",
   group = augroup("UserDiagnostic", { clear = true }),
   callback = function()
-    vim.diagnostic.enable(false)
+    vim.diagnostic.disable()
   end,
 })
 
@@ -143,7 +143,7 @@ autocmd("ModeChanged", {
   pattern = "i:n",
   group = augroup("UserDiagnostic", { clear = true }),
   callback = function()
-    vim.diagnostic.enable(true)
+    vim.diagnostic.enable()
   end,
 })
 

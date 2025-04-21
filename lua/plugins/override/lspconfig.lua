@@ -9,6 +9,7 @@ return {
     local glsp = require "gale.lsp"
     local lsp = glsp.lsp
 
+    -- Define servers and their configurations
     local servers = {
       astro = {},
       bashls = {
@@ -25,7 +26,6 @@ return {
       denols = {
         root_dir = lspconfig.util.root_pattern("deno.json", "deno.jsonc"),
       },
-      -- eslint = {},
       html = {},
       hls = {},
       gopls = {},
@@ -36,7 +36,6 @@ return {
             hint = { enable = true },
             telemetry = { enable = false },
             diagnostics = { globals = { "bit", "vim", "it", "describe", "before_each", "after_each" } },
-            -- workspace libraries are set via lazydev
           },
         },
       },
@@ -47,12 +46,11 @@ return {
       pyright = {},
       ruff = {
         on_attach = function(client, _)
-          -- prefer pyright's hover provider
+          -- Prefer pyright's hover provider
           client.server_capabilities.hoverProvider = false
         end,
       },
       somesass_ls = {},
-      -- tailwindcss = {},
       taplo = {},
       vtsls = {
         single_file_support = false,
@@ -81,24 +79,36 @@ return {
       zls = {},
     }
 
-    for name, opts in pairs(servers) do
-      opts.on_init = glsp.on_init
-      opts.on_attach = glsp.generate_on_attach(opts.on_attach)
-      opts.capabilities = glsp.capabilities
-      lspconfig[name].setup(opts)
+    -- Helper function to setup servers
+    local function setup_servers()
+      for name, opts in pairs(servers) do
+        opts.on_init = glsp.on_init
+        opts.on_attach = glsp.generate_on_attach(opts.on_attach)
+        opts.capabilities = glsp.capabilities
+        lspconfig[name].setup(opts)
+      end
     end
 
-    -- LSP UI
+    setup_servers()
+
+    -- Global LSP UI settings
     local border = "rounded"
-    local x = vim.diagnostic.severity
-    vim.diagnostic.config {
-      virtual_text = false,
-      signs = { text = { [x.ERROR] = "", [x.WARN] = "", [x.INFO] = "", [x.HINT] = "󰌵" } },
+    local severity = vim.diagnostic.severity
+    vim.diagnostic.config({
+      virtual_text = false, -- Disable virtual text by default
+      signs = {
+        text = {
+          [severity.ERROR] = "",
+          [severity.WARN] = "",
+          [severity.INFO] = "",
+          [severity.HINT] = "󰌵",
+        },
+      },
       float = { border = border },
       underline = true,
-    }
+    })
 
-    -- Gutter
+    -- Define gutter signs
     vim.fn.sign_define("CodeActionSign", { text = "󰉁", texthl = "CodeActionSignHl" })
   end,
 }

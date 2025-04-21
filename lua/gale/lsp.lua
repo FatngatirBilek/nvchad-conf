@@ -29,6 +29,17 @@ local on_attach = function(_, bufnr)
   map("n", "<leader>ra", function()
     require "nvchad.lsp.renamer"()
   end, { desc = "LSP rename" })
+
+  -- Optional: Add keymap for diagnostics
+  map("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagnostics float" })
+  map("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic" })
+  map("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic" })
+  map("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Add diagnostics to location list" })
+
+  -- Optional: Enable inlay hints if available
+  if vim.lsp.buf.inlay_hint then
+    vim.lsp.buf.inlay_hint(bufnr, true)
+  end
 end
 
 ---@param custom_on_attach? OnAttach
@@ -46,7 +57,7 @@ end
 ---@type OnInit
 M.on_init = function(client, _)
   if client.supports_method "textDocument/semanticTokens" then
-    client.server_capabilities.semanticTokensProvider = nil
+    client.server_capabilities.semanticTokensProvider = nil -- Disable semantic tokens if not needed
   end
 end
 

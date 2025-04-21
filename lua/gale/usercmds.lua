@@ -6,7 +6,7 @@ create_cmd("MergeLists", utils.combine_lists, {})
 
 create_cmd("WipeReg", function()
   utils.clear_registers()
-  vim.notify(" Registers cleared and shada file successfully updated.", vim.log.levels.INFO)
+  vim.notify("Registers cleared and shada file successfully updated.", vim.log.levels.INFO)
 end, { desc = "Wipe registers" })
 
 create_cmd("ToggleWordCount", function()
@@ -54,25 +54,24 @@ create_cmd("TabbyStop", function()
 end, { desc = "Stop TabbyML docker container" })
 
 create_cmd("ToggleInlayHints", function()
-  ---@diagnostic disable-next-line
-  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-end, { desc = "Toogle inlay hints in current buffer" })
+  if vim.lsp.buf.inlay_hint then
+    vim.lsp.buf.inlay_hint(0, not vim.lsp.buf.inlay_hint(0, nil))
+  else
+    vim.notify("Inlay hints are not supported by the current LSP client", vim.log.levels.WARN)
+  end
+end, { desc = "Toggle inlay hints in current buffer" })
 
 create_cmd("DiagnosticsVirtualTextToggle", function()
   local current_value = vim.diagnostic.config().virtual_text
-  if current_value then
-    vim.diagnostic.config { virtual_text = false }
-  else
-    vim.diagnostic.config { virtual_text = true }
-  end
+  vim.diagnostic.config { virtual_text = not current_value }
 end, { desc = "Toggle inline diagnostics" })
 
 create_cmd("DiagnosticsToggle", function()
-  local current_value = vim.diagnostic.is_enabled()
-  if current_value then
-    vim.diagnostic.enable(false)
+  local current_buf = 0 -- current buffer
+  if vim.diagnostic.is_enabled(current_buf) then
+    vim.diagnostic.disable(current_buf)
   else
-    vim.diagnostic.enable(true)
+    vim.diagnostic.enable(current_buf)
   end
 end, { desc = "Toggle diagnostics" })
 

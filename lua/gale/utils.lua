@@ -30,11 +30,7 @@ M.add_alias = function(target_cmd, alias)
 end
 
 M.is_tbl = function(v)
-  if type(v) == "table" then
-    return true
-  else
-    return false
-  end
+  return type(v) == "table"
 end
 
 M.glb_map = function(mode, lhs, rhs, opts)
@@ -45,88 +41,53 @@ M.glb_map = function(mode, lhs, rhs, opts)
   end
 
   if M.is_tbl(lhs) then
-    ---@cast lhs table
     for _, trigger in ipairs(lhs) do
       vim.keymap.set(mode, trigger, rhs, options)
     end
   else
-    ---@cast lhs string
     vim.keymap.set(mode, lhs, rhs, options)
   end
 end
 
 M.buf_map = function(bufnr, mode, lhs, rhs, opts)
   opts = opts or {}
-  opts.buffer = bufnr and bufnr or 0
+  opts.buffer = bufnr or 0
   M.glb_map(mode, lhs, rhs, opts)
 end
 
 local map_exists = function(name, map_mode)
   local check = vim.fn.maparg(name, map_mode)
-  if check == "" then
-    return false
-  elseif check == {} then
-    return false
-  else
-    return true
-  end
+  return not (check == "" or check == {})
 end
 
 M.del_map = function(mode, trigger)
   local del = vim.api.nvim_del_keymap
-  local is_tbl = M.is_tbl
 
-  local get_case = function(vmode, lhs)
-    if not is_tbl(vmode) and not is_tbl(lhs) then
-      return 1
-    elseif not is_tbl(vmode) and is_tbl(lhs) then
-      return 2
-    elseif is_tbl(vmode) and not is_tbl(lhs) then
-      return 3
-    elseif is_tbl(vmode) and is_tbl(lhs) then
-      return 4
+  if M.is_tbl(mode) and M.is_tbl(trigger) then
+    for _, modeval in ipairs(mode) do
+      for _, trigval in ipairs(trigger) do
+        if map_exists(trigval, modeval) then
+          del(modeval, trigval)
+        end
+      end
+    end
+  elseif M.is_tbl(mode) then
+    for _, modeval in ipairs(mode) do
+      if map_exists(trigger, modeval) then
+        del(modeval, trigger)
+      end
+    end
+  elseif M.is_tbl(trigger) then
+    for _, trigval in ipairs(trigger) do
+      if map_exists(trigval, mode) then
+        del(mode, trigval)
+      end
+    end
+  else
+    if map_exists(trigger, mode) then
+      del(mode, trigger)
     end
   end
-
-  local case = get_case(mode, trigger)
-  switch(case, {
-    [1] = function()
-      ---@cast mode string
-      ---@cast trigger string
-      if map_exists(trigger, mode) then
-        del(mode, trigger)
-      end
-    end,
-    [2] = function()
-      ---@cast mode string
-      ---@cast trigger table
-      for _, triggerval in ipairs(trigger) do
-        if map_exists(triggerval, mode) then
-          del(mode, triggerval)
-        end
-      end
-    end,
-    [3] = function()
-      ---@cast mode table
-      ---@cast trigger string
-      for _, modeval in ipairs(mode) do
-        if map_exists(trigger, modeval) then
-          del(modeval, trigger)
-        end
-      end
-    end,
-    [4] = function()
-      ---@cast mode table
-      ---@cast trigger table
-      for _, modeval in ipairs(mode) do
-        for _, triggerval in ipairs(trigger) do
-          if map_exists(triggerval, modeval) then
-            del(modeval, triggerval)
-          end
-        end
-      end
-    end,
-  })
 end
 
 local is_inspect_tree_open = function()
@@ -144,7 +105,6 @@ end
 M.toggle_inspect_tree = function()
   local open, win = is_inspect_tree_open()
   if open then
-    ---@cast win integer
     local bufnr = vim.api.nvim_win_get_buf(win)
     vim.api.nvim_buf_delete(bufnr, { force = true })
   else
@@ -175,12 +135,12 @@ M.go_to_github_link = function()
       local gh_link = string.format("https://github.com/%s.git", string)
       vim.ui.open(gh_link)
     else
-      vim.notify.dismiss() ---@diagnostic disable-line
+      vim.notify.dismiss()
       vim.notify(" Not a valid GitHub string", vim.log.levels.ERROR, { icon = "" })
       return
     end
   else
-    vim.notify.dismiss() ---@diagnostic disable-line
+    vim.notify.dismiss()
     vim.notify(" Not a string", vim.log.levels.ERROR, { icon = "" })
     return
   end
@@ -209,7 +169,7 @@ M.code_action_listener = function()
   local buffer = vim.api.nvim_get_current_buf()
   local clients = vim.lsp.get_clients { bufnr = buffer }
 
-  if clients == nil or #clients == 0 then
+  if not clients or #clients == 0 then
     return
   end
 
@@ -218,9 +178,13 @@ M.code_action_listener = function()
   end, clients)[1] ~= nil
 
   if has_code_action_support then
-    local context = { diagnostics = vim.lsp.diagnostic.get_line_diagnostics(buffer) }
-    local params = vim.lsp.util.make_range_params()
-    params.context = context
+    -- Get the position_encoding from the first client
+    local position_encoding = clients[1].offset_encoding or "utf-16"
+
+    -- Create range parameters with position_encoding
+    local diagnostics = vim.diagnostic.get(buffer)
+    local params = vim.lsp.util.make_range_params(nil, position_encoding)
+    params.context = { diagnostics = diagnostics }
 
     vim.lsp.buf_request(buffer, "textDocument/codeAction", params, function(_, result, _, _)
       vim.fn.sign_unplace("code_action_gear", { buffer = buffer })
@@ -255,35 +219,7 @@ M.handle_paste = function()
   vim.cmd.normal '"+p'
 end
 
-M.menus = {
-  main = {
-    --[[ {
-      name = "  Copy",
-      cmd = M.handle_copy,
-    },
-    {
-      name = "  Paste",
-      cmd = M.handle_paste,
-    },
-    { name = "separator" }, ]]
-    {
-      name = "󰉁 Lsp Actions",
-      hl = "Exblue",
-      items = "lsp",
-    },
-    { name = "separator" },
-    {
-      name = "  Color Picker",
-      hl = "Exred",
-      cmd = function()
-        require("minty.huefy").open()
-      end,
-    },
-  },
-}
-
 M.word_iterator = function(line)
-  -- Match sequences of alphanumeric characters, underscores, periods, or hyphens
   local pattern = "[%w_%-%.]+"
   return function()
     return string.gmatch(line, pattern)
@@ -376,9 +312,6 @@ M.combine_lists = function()
   local bufnr = vim.api.nvim_get_current_buf()
   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
-  -- Find the first empty line that acts as a separator.
-  -- We use a pattern to catch any whitespace-only line.
-
   local separator_index = nil
   for i, line in ipairs(lines) do
     if line:match "^%s*$" then
@@ -392,7 +325,6 @@ M.combine_lists = function()
     return
   end
 
-  -- Build list1 (lines before the separator) and list2 (lines after)
   local list1 = {}
   local list2 = {}
 
@@ -409,13 +341,11 @@ M.combine_lists = function()
     return
   end
 
-  -- Combine the two lists, adding " - " between each pair.
   local combined = {}
   for i = 1, #list1 do
     table.insert(combined, list1[i] .. " - " .. list2[i])
   end
 
-  -- Replace the entire buffer with the combined lines.
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, combined)
   vim.notify "Lists combined successfully!"
 end

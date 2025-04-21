@@ -5,16 +5,16 @@ return {
   ---@module "noice"
   opts = {
     cmdline = {
-      enabled = true,
+      enabled = true, -- Enable enhanced command-line UI
     },
     messages = {
-      enabled = false,
+      enabled = false, -- Disable message UI
     },
     popupmenu = {
-      enabled = false,
+      enabled = false, -- Disable popup menu enhancements
     },
     notify = {
-      enabled = false,
+      enabled = false, -- Disable notification UI
     },
     lsp = {
       override = {
@@ -27,7 +27,7 @@ return {
         ---@type NoiceViewOptions
         opts = {
           size = {
-            max_width = vim.api.nvim_win_get_width(0) - 6,
+            max_width = math.max(vim.api.nvim_win_get_width(0) - 6, 40), -- Ensure a minimum width of 40
           },
         },
       },
@@ -36,19 +36,19 @@ return {
         ---@type NoiceViewOptions
         opts = {
           size = {
-            max_width = vim.api.nvim_win_get_width(0) - 6,
+            max_width = math.max(vim.api.nvim_win_get_width(0) - 6, 40), -- Ensure a minimum width of 40
           },
         },
       },
       progress = {
-        enabled = false,
+        enabled = false, -- Disable LSP progress UI
       },
       message = {
-        enabled = false,
+        enabled = false, -- Disable LSP messages
       },
     },
     presets = {
-      lsp_doc_border = true,
+      lsp_doc_border = true, -- Enable border around LSP documentation
     },
   },
 }
