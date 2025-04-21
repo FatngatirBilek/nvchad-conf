@@ -74,11 +74,11 @@ map("n", "<leader>cp", function()
 end, { desc = "Open color picker" })
 
 -- NvimTree toggle
-map("n", "<Space>e", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle NvTree file explorer" })
+map("n", "<leader>ee", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle NvTree file explorer" })
 
 -- NvChad
 -- Updated theme picker toggle to <Space>tn
-map("n", "<Space>tn", function()
+map("n", "<leader>tn", function()
   require("nvchad.themes").open { style = "flat" }
 end, { desc = "Open theme picker" })
 
@@ -86,7 +86,7 @@ end, { desc = "Open theme picker" })
 local term = require "nvchad.term"
 
 -- Updated horizontal terminal toggle to <Space>th
-map({ "n", "t" }, "<Space>th", function()
+map({ "n", "t" }, "<leader>th", function()
   term.toggle { pos = "sp", id = "htoggleTerm" }
 end, { desc = "Term toggle horizontal split" })
 
