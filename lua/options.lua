@@ -47,13 +47,20 @@ local custom = {
     ignorecase = true,
     updatetime = 100,
     lazyredraw = false,
+    -- Append keywords to iskeyword
     iskeyword = vim.opt.iskeyword:append { "_", "@", ".", "-" },
+    -- Append paths to path
     path = vim.opt.path:append { "**", "lua", "src" },
   },
 }
 
 for i, opts in pairs(custom) do
   for k, v in pairs(opts) do
+    -- Ensure the buffer is modifiable before setting options
+    if i == "opt" and not vim.bo.modifiable then
+      vim.bo.modifiable = true
+    end
+
     vim[i][k] = v
   end
 end
