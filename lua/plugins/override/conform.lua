@@ -31,6 +31,7 @@ return {
       toml = { "taplo" },
       yaml = { "yamlfmt" },
       zig = { "zigfmt" },
+      nix = { "alejandra" },
     },
     format_on_save = function(bufnr)
       -- Disable with a global or buffer-local variable

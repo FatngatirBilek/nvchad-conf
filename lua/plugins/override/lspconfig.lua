@@ -77,6 +77,7 @@ return {
       },
       yamlls = {},
       zls = {},
+      nil_ls = {}, -- Basic configuration for the nil (Nix) language server
     }
 
     -- Helper function to setup servers
@@ -94,7 +95,7 @@ return {
     -- Global LSP UI settings
     local border = "rounded"
     local severity = vim.diagnostic.severity
-    vim.diagnostic.config({
+    vim.diagnostic.config {
       virtual_text = false, -- Disable virtual text by default
       signs = {
         text = {
@@ -106,7 +107,7 @@ return {
       },
       float = { border = border },
       underline = true,
-    })
+    }
 
     -- Define gutter signs
     vim.fn.sign_define("CodeActionSign", { text = "󰉁", texthl = "CodeActionSignHl" })
