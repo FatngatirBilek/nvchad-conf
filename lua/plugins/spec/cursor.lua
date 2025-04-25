@@ -1,6 +1,7 @@
 ---@type NvPluginSpec
 return {
     "sphamba/smear-cursor.nvim",
+    lazy = false,
     opts = {
         -- Smear cursor when switching buffers or windows.
         smear_between_buffers = true,
