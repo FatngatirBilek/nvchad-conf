@@ -61,6 +61,7 @@ return {
     { import = "plugins.spec.vim-illuminate" },
     { import = "plugins.spec.vim-visual-multi" },
     { import = "plugins.spec.zen-mode" },
+    { import = "plugins.spec.cursor" },
     { import = "plugins.override.base46" },
     { import = "plugins.override.blankline" },
     { import = "plugins.override.cmp" },
