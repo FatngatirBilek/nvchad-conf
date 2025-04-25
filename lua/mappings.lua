@@ -24,6 +24,10 @@ map("n", "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true })
 map("n", "<Up>", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true })
 map("n", "<Down>", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', { expr = true })
 
+-- Change binding of B and E to be more convenient
+map("n", "B", "^", { desc = "Move to the beginning of the line" })
+map("n", "E", "$", { desc = "Move to the end of the line" })
+
 -- Buffer motions
 map("i", "<C-b>", "<ESC>^i", { desc = "Go to beginning of line" })
 map("i", "<C-e>", "<End>", { desc = "Go to end of line" })
