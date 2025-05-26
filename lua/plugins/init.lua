@@ -4,7 +4,6 @@ return {
   { import = "plugins.local.popurri" },
   { import = "plugins.local.yerbreak" },
   { import = "plugins.spec.autopairs" },
-  { import = "plugins.spec.better-escape" },
   { import = "plugins.spec.ccc" },
   { import = "plugins.spec.cd-project" },
   { import = "plugins.spec.cloak" },
