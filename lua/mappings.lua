@@ -1,11 +1,10 @@
-local utils = require("gale.utils")
+local utils = require "gale.utils"
 local map = utils.glb_map
 
 -- General mappings
 map("n", "z-", "z^") -- Remap z^ into z- for convenience
 map("n", "g-", "g;") -- Remap g; into g- for convenience
 map("n", ";", ":", { desc = "General enter CMD mode" })
-map("i", "jk", "<ESC>", { desc = "General exit insert mode" })
 map("n", "<C-c>", "<cmd>%y+<CR>", { desc = "General copy file content" })
 map({ "n", "i" }, "<C-s>", "<cmd>w<CR>", { desc = "General save file" })
 map("n", "<Esc>", "<cmd>noh<CR>", { desc = "General clear search highlights" })
@@ -15,7 +14,7 @@ map("n", "<leader>cm", "<cmd>mes clear<CR>", { desc = "General clear messages" }
 map("i", "<A-BS>", "<C-w>", { desc = "General remove word" })
 
 map("n", "<leader>ol", function()
-	vim.ui.open(vim.fn.expand("%:p:h"))
+  vim.ui.open(vim.fn.expand "%:p:h")
 end, { desc = "General open file location in file explorer" })
 
 -- Allow moving the cursor through wrapped lines with j, k, <Up> and <Down>
@@ -74,58 +73,50 @@ map("n", "<leader>ds", vim.diagnostic.setloclist, { desc = "LSP diagnostic locli
 
 -- Minty
 map("n", "<leader>cp", function()
-	require("minty.huefy").open()
+  require("minty.huefy").open()
 end, { desc = "Open color picker" })
 
 -- NvimTree toggle
 map("n", "<leader>ee", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle NvTree file explorer" })
 
 -- Term
-local term = require("nvchad.term")
+local term = require "nvchad.term"
 
 map({ "n", "t" }, "<C-A-l>", function()
-	term.toggle({
-		pos = "sp",
-		id = "htoggleTermLoc",
-		cmd = "cd " .. vim.fn.expand("%:p:h"),
-	})
-end, { desc = "Term toggle horizontal split in buffer location" })
-
-map({ "n", "t" }, "<C-A-h>", function()
-	term.new({
-		pos = "sp",
-		id = "hnewTerm",
-	})
+  term.toggle {
+    pos = "sp",
+    id = "htoggleTermLoc",
+  }
 end, { desc = "Term toggle horizontal split in buffer location" })
 
 map({ "n", "t" }, "<A-i>", function()
-	term.toggle({ pos = "float", id = "floatTerm" })
+  term.toggle { pos = "float", id = "floatTerm" }
 end, { desc = "Term toggle floating" })
 
 map({ "n", "t" }, "<A-S-i>", function()
-	term.toggle({
-		pos = "float",
-		id = "floatTermLoc",
-		cmd = "cd " .. vim.fn.expand("%:p:h"),
-	})
+  term.toggle {
+    pos = "float",
+    id = "floatTermLoc",
+    cmd = "cd " .. vim.fn.expand "%:p:h",
+  }
 end, { desc = "Term toggle floating in buffer location" })
 
 -- TreeSitter
 map({ "n", "v" }, "<leader>it", function()
-	utils.toggle_inspect_tree()
+  utils.toggle_inspect_tree()
 end, { desc = "TreeSitter toggle inspect tree" })
 
 map("n", "<leader>ii", "<cmd>Inspect<CR>", { desc = "TreeSitter inspect under cursor" })
 
 -- Tabufline
-local tabufline = require("nvchad.tabufline")
+local tabufline = require "nvchad.tabufline"
 
 map("n", "<Tab>", function()
-	tabufline.next()
+  tabufline.next()
 end, { desc = "Buffer go to next" })
 
 map("n", "<S-Tab>", function()
-	tabufline.prev()
+  tabufline.prev()
 end, { desc = "Buffer go to prev" })
 
 map("n", "<leader>bn", "<cmd>enew<CR>", { desc = "Buffer new" })
@@ -133,45 +124,43 @@ map("n", "<leader>bh", "<cmd>split | enew<CR>", { desc = "Buffer new horizontal 
 map("n", "<leader>bv", "<cmd>vsplit | enew<CR>", { desc = "Buffer new vertical split" })
 
 map("n", "<leader>x", function()
-	tabufline.close_buffer()
+  tabufline.close_buffer()
 end, { desc = "Buffer close" })
 
 map("n", "<A-Left>", function()
-	tabufline.move_buf(-1)
+  tabufline.move_buf(-1)
 end, { desc = "Tabufline move buffer to the left" })
 
 map("n", "<A-Right>", function()
-	tabufline.move_buf(1)
+  tabufline.move_buf(1)
 end, { desc = "Tabufline move buffer to the right" })
 
 map("n", "<A-|>", "<cmd>TabuflineToggle<CR>", { desc = "Tabufline toggle visibility" })
 
 for i = 1, 9 do
-	map("n", "<A-" .. i .. ">", i .. "gt", { desc = "Tab go to tab " .. i })
+  map("n", "<A-" .. i .. ">", i .. "gt", { desc = "Tab go to tab " .. i })
 end
 
 -- Utils
 map("n", "gh", function()
-	utils.go_to_github_link()
+  utils.go_to_github_link()
 end, { desc = "Go to GitHub link generated from string" })
 
 map(
-	"n",
-	"<leader>rl",
-	"<cmd>s/[a-zA-Z]/\\=nr2char((char2nr(submatch(0)) - (char2nr(submatch(0)) >= 97 ? 97 : 65) + 13) % 26 + (char2nr(submatch(0)) >= 97 ? 97 : 65))/g<CR>",
-	{ desc = "_ Mum and dad were having fun" }
+  "n",
+  "<leader>rl",
+  "<cmd>s/[a-zA-Z]/\\=nr2char((char2nr(submatch(0)) - (char2nr(submatch(0)) >= 97 ? 97 : 65) + 13) % 26 + (char2nr(submatch(0)) >= 97 ? 97 : 65))/g<CR>",
+  { desc = "_ Mum and dad were having fun" }
 )
 
 map("n", "<leader>rf", function()
-	vim.cmd(
-		[[%s/[a-zA-Z]/\=nr2char((char2nr(submatch(0)) - (char2nr(submatch(0)) >= 97 ? 97 : 65) + 13) % 26 + (char2nr(submatch(0)) >= 97 ? 97 : 65))/g]]
-	)
+  vim.cmd [[%s/[a-zA-Z]/\=nr2char((char2nr(submatch(0)) - (char2nr(submatch(0)) >= 97 ? 97 : 65) + 13) % 26 + (char2nr(submatch(0)) >= 97 ? 97 : 65))/g]]
 end, { desc = "_ Mum and dad were having fun" })
 
 -- Discord Presence
 vim.keymap.set("n", "<leader>Ct", function()
-	require("cord.api.command").toggle_presence()
+  require("cord.api.command").toggle_presence()
 end)
 vim.keymap.set("n", "<leader>Ci", function()
-	require("cord.api.command").toggle_idle_force()
+  require("cord.api.command").toggle_idle_force()
 end)
