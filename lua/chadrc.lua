@@ -7,7 +7,7 @@ local modules = aux.modules
 local themes_customs = aux.themes_customs
 
 M.base46 = {
-  transparency = true,
+  transparency = false,
   theme = "bearded-arc",
   theme_toggle = { "bearded-arc", "bearded-arc" },
   integrations = {
